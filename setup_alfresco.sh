@@ -60,8 +60,9 @@ download_compile_jdk(){
 	echo "Extracting JDK"
 	tar -xzf ${jdk_download_link##*/}
 	chown -R alfresco. ${alfresco_dir} 
-	cat <<-_EOF >> /etc/profile.d/java.sh
-	export JAVA_HOME=${alfresco_dir}/java/jdk1.7.0_07
+	ln -fs ${alfresco_dir}/java/jdk1* ${alfresco_dir}/java/jdk
+	cat <<-_EOF > /etc/profile.d/java.sh
+	export JAVA_HOME=${alfresco_dir}/java/jdk
 	export PATH=\$PATH:\$HOME/bin:\$JAVA_HOME/bin
 	_EOF
 }
@@ -264,7 +265,7 @@ configure_alfresco(){
 	cat <<-_EOF >  /etc/init.d/alfresco
 	#!/bin/sh -e
 
-	ALFRESCO_SCRIPT="${alfresco_dir}alfresco.sh"
+	ALFRESCO_SCRIPT="${alfresco_dir}/alfresco.sh"
 
 	if [ "\$1" = "start" ]; then
 	 su - alfresco "\${ALFRESCO_SCRIPT}" "start"
@@ -279,9 +280,11 @@ configure_alfresco(){
 	_EOF
 	chmod +x /etc/init.d/alfresco
 	chown alfresco:alfresco /etc/init.d/alfresco
+	chown -R alfresco:alfresco ${alfresco_dir}
 	[[ -d ${alfresco_dir}/alf_data ]] ||  mkdir ${alfresco_dir}/alf_data
 	alfresco_prop=${alfresco_dir}/tomcat/shared/classes/alfresco-global.properties.sample
 	[[ -f ${alfresco_prop%.sample} ]] || cp -v $alfresco_prop ${alfresco_prop%.sample}
+	
 	
 		
 

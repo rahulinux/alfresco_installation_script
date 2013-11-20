@@ -18,13 +18,13 @@ alfresco_download_link='http://dl.alfresco.com/release/community/build-04576/alf
 #------------> Functions 
 os_update() {
 	echo "Updating OS"
-	sudo apt-get update
-	sudo apt-get upgrade
+	sudo apt-get -y  update
+	sudo apt-get -y  upgrade
 }
 
 remove_old_jdk() {
 	echo "Removing Preinstalled OpenJDK"
-	apt-get purge openjdk-\*
+	apt-get -y  purge openjdk-\*
 }
 
 create_user() {
@@ -69,12 +69,12 @@ download_compile_jdk(){
 
 install_required_packages() {
 	echo "Installing Required Pckages"
-	apt-get install ghostscript && echo "GhostScript Done"
-	apt-get install imagemagick && echo "Imagemagick Done"
-	apt-get install ffmpeg && echo "ffmpeg Done"
-	apt-get install libreoffice && echo "LibreOffice"
-	apt-get install libart-2.0-2 libjpeg62 libgif-dev
-	apt-get install gcc libreadline-dev bison flex zlib1g-dev make
+	apt-get -y  install ghostscript && echo "GhostScript Done"
+	apt-get -y  install imagemagick && echo "Imagemagick Done"
+	apt-get -y  install ffmpeg && echo "ffmpeg Done"
+	apt-get -y  install libreoffice && echo "LibreOffice"
+	apt-get -y  install libart-2.0-2 libjpeg62 libgif-dev
+	apt-get -y  install gcc libreadline-dev bison flex zlib1g-dev make
 	cd /usr/local/src/
 	wget http://launchpadlibrarian.net/43569089/swftools_0.9.0-0ubuntu2_i386.deb
 	chmod a+x swftools_0.9.0-0ubuntu2_i386.deb
@@ -83,29 +83,29 @@ install_required_packages() {
 }
 
 configure_postgresql() {
-	[[ -d ${postgresql_dir}/9.0.4 ]] || sudo mkdir ${postgresql_dir}/9.0.4
-	cd $postgresql_dir
-	test -f postgresql-9.0.4.tar.gz  || wget ftp://ftp.postgresql.org/pub/source/v9.0.4/postgresql-9.0.4.tar.gz 
-	chmod a+x postgresql-9.0.4.tar.gz
-	gunzip postgresql-9.0.4.tar.gz
-	tar xvf postgresql-9.0.4.tar
-	cd ${postgresql_dir}/postgresql-9.0.4/
-	./configure exec_prefix=${postgresql_dir}/9.0.4
-	make exec_prefix=${postgresql_dir}/9.0.4
-	make install exec_prefix=${postgresql_dir}/9.0.4
-	chown -R postgres:postgres ${postgresql_dir}
-	su - postgres -c "mkdir ${postgresql_dir}/9.0.4/data
-	mkdir ${postgresql_dir}/9.0.4/log
-	touch /home/postgres/.environment-9.0.4
-	"
-	cat <<-_EOF > /home/postgres/.environment-9.0.4
-	#!/bin/sh
-
-	export POSTGRESQL_VERSION=9.0.4
-	export LD_LIBRARY_PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/lib
-	export PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/bin:\${PATH}
-	_EOF
-	grep -q '.environment-9.0.4' /home/postgres/.bashrc || echo '. .environment-9.0.4' >> /home/postgres/.bashrc
+#	[[ -d ${postgresql_dir}/9.0.4 ]] || mkdir ${postgresql_dir}/9.0.4
+#	cd $postgresql_dir
+#	test -f postgresql-9.0.4.tar.gz  || wget ftp://ftp.postgresql.org/pub/source/v9.0.4/postgresql-9.0.4.tar.gz 
+#	chmod a+x postgresql-9.0.4.tar.gz
+#	gunzip postgresql-9.0.4.tar.gz
+#	tar xvf postgresql-9.0.4.tar
+#	cd ${postgresql_dir}/postgresql-9.0.4/
+#	./configure exec_prefix=${postgresql_dir}/9.0.4
+#	make exec_prefix=${postgresql_dir}/9.0.4
+#	make install exec_prefix=${postgresql_dir}/9.0.4
+#	chown -R postgres:postgres ${postgresql_dir}
+#	su - postgres -c "mkdir ${postgresql_dir}/9.0.4/data
+#	mkdir ${postgresql_dir}/9.0.4/log
+#	touch /home/postgres/.environment-9.0.4
+#	"
+#	cat <<-_EOF > /home/postgres/.environment-9.0.4
+#	#!/bin/sh
+#
+#	export POSTGRESQL_VERSION=9.0.4
+#	export LD_LIBRARY_PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/lib
+#	export PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/bin:\${PATH}
+#	_EOF
+#	grep -q '.environment-9.0.4' /home/postgres/.bashrc || echo '. .environment-9.0.4' >> /home/postgres/.bashrc
 	su - postgres -c "
 	chmod a+x /home/postgres/.environment-9.0.4
 	/home/postgres/.environment-9.0.4
@@ -162,7 +162,7 @@ configure_postgresql() {
 	exit 0
 	EOF
 	chmod +x /etc/init.d/postgresql.9.0.4
-	service postgresql.9.0.4 start
+	service postgresql.9.0.4 start && sleep 8
 	sql_cmd=/home/postgres/.sql_cmd
 	cat <<-EOF > $sql_cmd
 	CREATE ROLE alfresco WITH PASSWORD 'alfresco' LOGIN;
@@ -191,7 +191,7 @@ configure_tomcat(){
 	mv $extracted_name ${alfresco_dir}/tomcat
 	echo "Checking Tomcat"
 	${alfresco_dir}/tomcat/bin/startup.sh
-	( ps -ef | grep java && sleep 3 && nc -vzw 1 localhost 8080 ) && echo "Tomcat is running Successfully" ||
+	( ps -ef | grep java && sleep 8 && nc -vzw 5 localhost 8080 ) && echo "Tomcat is running Successfully" ||
 	{ echo "Something wrong with tomcat installation"; exit 1;  }
 	${alfresco_dir}/tomcat/bin/shutdown.sh
 	cateline_prop=${alfresco_dir}/tomcat/conf/catalina.properties
@@ -216,23 +216,23 @@ configure_tomcat(){
 }
 
 configure_alfresco(){
-#	mkdir ${alfresco_dir}/tomcat/{shared,endorsed}
-#	mkdir ${alfresco_dir}/tomcat/shared/{classes,lib}
-#	[[ -f ${alfresco_download_link##*/} ]] || wget ${alfresco_download_link}
-#        chmod a+x ${alfresco_download_link##*/}
-#	apt-get install unzip
-#	unzip ${alfresco_download_link##*/}
-#	mv -v web-server/shared/* ${alfresco_dir}/tomcat/shared/
-#	mv -v web-server/lib/* ${alfresco_dir}/tomcat/lib/
-#	mv -v web-server/webapps/* ${alfresco_dir}/tomcat/webapps/
-#	cat <<-_EOF > /opt/alfresco/start_oo.sh
-#	#!/bin/sh -e
-#
-#	SOFFICE_ROOT=/usr/bin
-#	"\${SOFFICE_ROOT}/soffice" "--accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager" --nologo --headless &
-#	_EOF
-#	chmod uga+x ${alfresco_dir}/start_oo.sh
-	${alfresco_dir}/start_oo.sh
+	mkdir ${alfresco_dir}/tomcat/{shared,endorsed}
+	mkdir ${alfresco_dir}/tomcat/shared/{classes,lib}
+	[[ -f ${alfresco_download_link##*/} ]] || wget ${alfresco_download_link}
+        chmod a+x ${alfresco_download_link##*/}
+	apt-get -y  install unzip
+	unzip ${alfresco_download_link##*/}
+	mv -v web-server/shared/* ${alfresco_dir}/tomcat/shared/
+	mv -v web-server/lib/* ${alfresco_dir}/tomcat/lib/
+	mv -v web-server/webapps/* ${alfresco_dir}/tomcat/webapps/
+	cat <<-_EOF > /opt/alfresco/start_oo.sh
+	#!/bin/sh -e
+
+	SOFFICE_ROOT=/usr/bin
+	"\${SOFFICE_ROOT}/soffice" "--accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager" --nologo --headless &
+	_EOF
+	chmod uga+x ${alfresco_dir}/start_oo.sh
+	${alfresco_dir}/start_oo.sh && sleep 8
 	killall soffice.bin
 	cat <<-_EOF >  ${alfresco_dir}/alfresco.sh
 	#!/bin/sh -e
@@ -293,14 +293,14 @@ configure_alfresco(){
 }
 
 Main(){
-	#os_update
-	#remove_old_jdk
-	#create_user
-	#create_required_dir_set_perm
-	#download_compile_jdk
-	#install_required_packages
-	#configure_postgresql
-	#configure_tomcat
+	os_update
+	remove_old_jdk
+	create_user
+	create_required_dir_set_perm
+	download_compile_jdk
+	install_required_packages
+	configure_postgresql
+	configure_tomcat
 	configure_alfresco
 }
 

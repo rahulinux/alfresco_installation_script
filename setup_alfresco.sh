@@ -215,22 +215,22 @@ configure_tomcat(){
 }
 
 configure_alfresco(){
-	mkdir ${alfresco_dir}/tomcat/{shared,endorsed}
-	mkdir ${alfresco_dir}/tomcat/shared/{classes,lib}
-	[[ -f ${alfresco_download_link##*/} ]] || wget ${alfresco_download_link}
-        chmod a+x ${alfresco_download_link##*/}
-	apt-get install unzip
-	unzip ${alfresco_download_link##*/}
-	mv -v web-server/shared/* ${alfresco_dir}/tomcat/shared/
-	mv -v web-server/lib/* ${alfresco_dir}/tomcat/lib/
-	mv -v web-server/webapps/* ${alfresco_dir}/tomcat/webapps/
-	cat <<-_EOF > /opt/alfresco/start_oo.sh
-	#!/bin/sh -e
-
-	SOFFICE_ROOT=/usr/bin
-	"\${SOFFICE_ROOT}/soffice" "--accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager" --nologo --headless &
-	_EOF
-	chmod uga+x ${alfresco_dir}/start_oo.sh
+#	mkdir ${alfresco_dir}/tomcat/{shared,endorsed}
+#	mkdir ${alfresco_dir}/tomcat/shared/{classes,lib}
+#	[[ -f ${alfresco_download_link##*/} ]] || wget ${alfresco_download_link}
+#        chmod a+x ${alfresco_download_link##*/}
+#	apt-get install unzip
+#	unzip ${alfresco_download_link##*/}
+#	mv -v web-server/shared/* ${alfresco_dir}/tomcat/shared/
+#	mv -v web-server/lib/* ${alfresco_dir}/tomcat/lib/
+#	mv -v web-server/webapps/* ${alfresco_dir}/tomcat/webapps/
+#	cat <<-_EOF > /opt/alfresco/start_oo.sh
+#	#!/bin/sh -e
+#
+#	SOFFICE_ROOT=/usr/bin
+#	"\${SOFFICE_ROOT}/soffice" "--accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager" --nologo --headless &
+#	_EOF
+#	chmod uga+x ${alfresco_dir}/start_oo.sh
 	${alfresco_dir}/start_oo.sh
 	killall soffice.bin
 	cat <<-_EOF >  ${alfresco_dir}/alfresco.sh
@@ -279,7 +279,7 @@ configure_alfresco(){
 	_EOF
 	chmod +x /etc/init.d/alfresco
 	chown alfresco:alfresco /etc/init.d/alfresco
-	mkdir ${alfresco_dir}/alf_data
+	[[ -d ${alfresco_dir}/alf_data ]] ||  mkdir ${alfresco_dir}/alf_data
 	alfresco_prop=${alfresco_dir}/tomcat/shared/classes/alfresco-global.properties.sample
 	[[ -f ${alfresco_prop%.sample} ]] || cp -v $alfresco_prop ${alfresco_prop%.sample}
 	
@@ -297,7 +297,7 @@ Main(){
 	#download_compile_jdk
 	#install_required_packages
 	#configure_postgresql
-	configure_tomcat
+	#configure_tomcat
 	configure_alfresco
 }
 

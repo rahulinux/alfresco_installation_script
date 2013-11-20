@@ -60,7 +60,7 @@ download_compile_jdk(){
 	echo "Extracting JDK"
 	tar -xzf ${jdk_download_link##*/}
 	chown -R alfresco. ${alfresco_dir} 
-	ln -fs ${alfresco_dir}/java/jdk1* ${alfresco_dir}/java/jdk
+	[[ -L ${alfresco_dir}/java/jdk ]] || ln -fs ${alfresco_dir}/java/jdk1* ${alfresco_dir}/java/jdk
 	cat <<-_EOF > /etc/profile.d/java.sh
 	export JAVA_HOME=${alfresco_dir}/java/jdk
 	export PATH=\$PATH:\$HOME/bin:\$JAVA_HOME/bin

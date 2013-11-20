@@ -83,29 +83,29 @@ install_required_packages() {
 }
 
 configure_postgresql() {
-#	[[ -d ${postgresql_dir}/9.0.4 ]] || mkdir ${postgresql_dir}/9.0.4
-#	cd $postgresql_dir
-#	test -f postgresql-9.0.4.tar.gz  || wget ftp://ftp.postgresql.org/pub/source/v9.0.4/postgresql-9.0.4.tar.gz 
-#	chmod a+x postgresql-9.0.4.tar.gz
-#	gunzip postgresql-9.0.4.tar.gz
-#	tar xvf postgresql-9.0.4.tar
-#	cd ${postgresql_dir}/postgresql-9.0.4/
-#	./configure exec_prefix=${postgresql_dir}/9.0.4
-#	make exec_prefix=${postgresql_dir}/9.0.4
-#	make install exec_prefix=${postgresql_dir}/9.0.4
-#	chown -R postgres:postgres ${postgresql_dir}
-#	su - postgres -c "mkdir ${postgresql_dir}/9.0.4/data
-#	mkdir ${postgresql_dir}/9.0.4/log
-#	touch /home/postgres/.environment-9.0.4
-#	"
-#	cat <<-_EOF > /home/postgres/.environment-9.0.4
-#	#!/bin/sh
-#
-#	export POSTGRESQL_VERSION=9.0.4
-#	export LD_LIBRARY_PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/lib
-#	export PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/bin:\${PATH}
-#	_EOF
-#	grep -q '.environment-9.0.4' /home/postgres/.bashrc || echo '. .environment-9.0.4' >> /home/postgres/.bashrc
+	[[ -d ${postgresql_dir}/9.0.4 ]] || mkdir ${postgresql_dir}/9.0.4
+	cd $postgresql_dir
+	test -f postgresql-9.0.4.tar.gz  || wget ftp://ftp.postgresql.org/pub/source/v9.0.4/postgresql-9.0.4.tar.gz 
+	chmod a+x postgresql-9.0.4.tar.gz
+	gunzip postgresql-9.0.4.tar.gz
+	tar xvf postgresql-9.0.4.tar
+	cd ${postgresql_dir}/postgresql-9.0.4/
+	./configure exec_prefix=${postgresql_dir}/9.0.4
+	make exec_prefix=${postgresql_dir}/9.0.4
+	make install exec_prefix=${postgresql_dir}/9.0.4
+	chown -R postgres:postgres ${postgresql_dir}
+	su - postgres -c "mkdir ${postgresql_dir}/9.0.4/data
+	mkdir ${postgresql_dir}/9.0.4/log
+	touch /home/postgres/.environment-9.0.4
+	"
+	cat <<-_EOF > /home/postgres/.environment-9.0.4
+	#!/bin/sh
+
+	export POSTGRESQL_VERSION=9.0.4
+	export LD_LIBRARY_PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/lib
+	export PATH=${postgresql_dir}/\${POSTGRESQL_VERSION}/bin:\${PATH}
+	_EOF
+	grep -q '.environment-9.0.4' /home/postgres/.bashrc || echo '. .environment-9.0.4' >> /home/postgres/.bashrc
 	su - postgres -c "
 	chmod a+x /home/postgres/.environment-9.0.4
 	/home/postgres/.environment-9.0.4

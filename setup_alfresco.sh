@@ -284,11 +284,16 @@ configure_alfresco(){
 	[[ -d ${alfresco_dir}/alf_data ]] ||  mkdir ${alfresco_dir}/alf_data
 	alfresco_prop=${alfresco_dir}/tomcat/shared/classes/alfresco-global.properties.sample
 	[[ -f ${alfresco_prop%.sample} ]] || cp -v $alfresco_prop ${alfresco_prop%.sample}
+	alfreso_global_properties=${alfresco_dir}/shared/classes/alfresco-global.properties
+	alfresco_custumxml=${alfresco_dir}/shared/classes/alfresco/web-extension/share-config-custom.xml
+	[[ -f ${alfreso_global_properties} ]] || cp -v alfresco-global.properties ${alfreso_global_properties}
+	[[ -f ${alfresco_custumxml} ]] || cp -v share-config-custom.xml ${alfresco_custumxml} 
 	
-	
-		
+}
 
-
+startup_services() {
+	update-rc.d alfresco defaults
+	update-rc.d postgresql.9.0.4  defaults
 
 }
 
@@ -302,6 +307,7 @@ Main(){
 	configure_postgresql
 	configure_tomcat
 	configure_alfresco
+	startup_services
 }
 
 

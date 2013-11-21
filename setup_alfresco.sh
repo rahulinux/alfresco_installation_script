@@ -292,8 +292,27 @@ configure_alfresco(){
 }
 
 startup_services() {
+	/etc/init.d/alfresco restart
 	update-rc.d alfresco defaults
 	update-rc.d postgresql.9.0.4  defaults
+
+}
+
+installation_report(){
+
+cat <<_EOF
+Installation has been successfully completed.
+---------------------------------------------
+Alfresco install dir :- $alfresco_dir
+---------------------------------------------
+You can access alfresco webGUI using : http://IPaddr:8080/share
+Username: admin
+Password: admin
+
+Note: it will take time for login page, you can trace logs using:
+tail -f ${alfresco_dir}/tomcat/logs/catalina.out
+--------------------------------------------
+_EOF
 
 }
 

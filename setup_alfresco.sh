@@ -162,6 +162,7 @@ configure_postgresql() {
 	exit 0
 	EOF
 	chmod +x /etc/init.d/postgresql.9.0.4
+	[[ -L /etc/init.d/postgresql ]] || ln -fs /etc/init.d/postgresql.9.0.4 /etc/init.d/postgresql
 	service postgresql.9.0.4 start && sleep 8
 	sql_cmd=/home/postgres/.sql_cmd
 	cat <<-EOF > $sql_cmd
@@ -293,8 +294,10 @@ configure_alfresco(){
 
 startup_services() {
 	/etc/init.d/alfresco restart
+	/etc/init.d/postgresql stop 
+	/etc/init.d/postgresql start
 	update-rc.d alfresco defaults
-	update-rc.d postgresql.9.0.4  defaults
+	update-rc.d postgresql  defaults
 
 }
 
@@ -308,6 +311,10 @@ Alfresco install dir :- $alfresco_dir
 You can access alfresco webGUI using : http://IPaddr:8080/share
 Username: admin
 Password: admin
+--------------------------------------------
+Troubleshooting
+Make sure following file shuld be exists,otherwise will not able to login
+${alfresco_dir}/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml
 
 Note: it will take time for login page, you can trace logs using:
 tail -f ${alfresco_dir}/tomcat/logs/catalina.out
@@ -327,6 +334,7 @@ Main(){
 	configure_tomcat
 	configure_alfresco
 	startup_services
+	installation_report
 }
 
 

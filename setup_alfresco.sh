@@ -2,7 +2,7 @@
 # Automate installation of alfresco on Ubuntu 12.04
 # Following the installation instructions from http://fcorti.com/2013/01/09/installation-alfresco-4-2-c-on-ubuntu/
 
-#set -e
+# set -e
 #-------------> Global variables
 
 alfresco_dir='/opt/alfresco'

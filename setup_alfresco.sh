@@ -2,7 +2,7 @@
 # Automate installation of alfresco on Ubuntu 12.04
 # Following the installation instructions from http://fcorti.com/2013/01/09/installation-alfresco-4-2-c-on-ubuntu/
 
-set -e
+#set -e
 #-------------> Global variables
 
 alfresco_dir='/opt/alfresco'
@@ -192,7 +192,7 @@ configure_tomcat(){
 	mv $extracted_name ${alfresco_dir}/tomcat
 	echo "Checking Tomcat"
 	${alfresco_dir}/tomcat/bin/startup.sh
-	( ps -ef | grep java && sleep 8 && nc -vzw 5 localhost 8080 ) && echo "Tomcat is running Successfully" ||
+	( ps -ef | grep java && sleep 15  && nc -vzw 5 localhost 8080 ) && echo "Tomcat is running Successfully" ||
 	{ echo "Something wrong with tomcat installation"; exit 1;  }
 	${alfresco_dir}/tomcat/bin/shutdown.sh
 	cateline_prop=${alfresco_dir}/tomcat/conf/catalina.properties
@@ -283,12 +283,12 @@ configure_alfresco(){
 	chown alfresco:alfresco /etc/init.d/alfresco
 	chown -R alfresco:alfresco ${alfresco_dir}
 	[[ -d ${alfresco_dir}/alf_data ]] ||  mkdir ${alfresco_dir}/alf_data
-	alfresco_prop=${alfresco_dir}/tomcat/shared/classes/alfresco-global.properties.sample
-	[[ -f ${alfresco_prop%.sample} ]] || cp -v $alfresco_prop ${alfresco_prop%.sample}
-	alfreso_global_properties=${alfresco_dir}/shared/classes/alfresco-global.properties
-	alfresco_custumxml=${alfresco_dir}/shared/classes/alfresco/web-extension/share-config-custom.xml
-	[[ -f ${alfreso_global_properties} ]] || cp -v alfresco-global.properties ${alfreso_global_properties}
-	[[ -f ${alfresco_custumxml} ]] || cp -v share-config-custom.xml ${alfresco_custumxml} 
+	#alfresco_prop=${alfresco_dir}/tomcat/shared/classes/alfresco-global.properties.sample
+	#[[ -f ${alfresco_prop%.sample} ]] || cp -v $alfresco_prop ${alfresco_prop%.sample}
+	alfreso_global_properties=${alfresco_dir}/tomcat/shared/classes/alfresco-global.properties
+	alfresco_custumxml=${alfresco_dir}/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml
+	[[ -f ${alfreso_global_properties} ]] || cp -v ./alfresco-global.properties ${alfreso_global_properties}
+	[[ -f ${alfresco_custumxml} ]] || cp -v ./share-config-custom.xml ${alfresco_custumxml}
 	
 }
 
